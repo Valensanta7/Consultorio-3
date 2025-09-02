@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Ficha Médica</title></head>
+<body>
+  <h1>Ficha de {{ paciente[0] }} {{ paciente[1] }} (ID {{ id_paciente }})</h1>
+  <form action="/guardar_ficha" method="POST">
+    <input type="hidden" name="id_paciente"   value="{{ id_paciente }}">
+    <textarea name="diagnostico"   placeholder="Diagnóstico" required></textarea><br>
+    <textarea name="tratamiento"   placeholder="Tratamiento"></textarea><br>
+    <textarea name="estudios"      placeholder="Estudios solicitados"></textarea><br>
+    <textarea name="observaciones" placeholder="Observaciones"></textarea><br>
+    <button type="submit">Guardar Ficha</button>
+  </form>
+  <p><a href="/">← Volver al inicio</a></p>
+</body>
+</html>
