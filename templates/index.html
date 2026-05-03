@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Consultorio – Inicio{% endblock %}
+
+{% block extra_styles %}
+  .hero {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+  .hero-main {
+    padding: 28px;
+  }
+  .hero-side {
+    padding: 22px;
+    background: linear-gradient(180deg, #ffffff 0%, #f2fffd 100%);
+  }
+  .hero-main, .hero-side {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+  }
+  .eyebrow {
+    display: inline-block;
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .search-box {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .quick-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .hero-side ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .stat-label {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .stat-value {
+    font-size: 36px;
+    font-weight: 800;
+  }
+  .stat-help {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .activity-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+  .activity-list {
+    display: grid;
+    gap: 12px;
+  }
+  .activity-item, .patient-card {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+    background: var(--bg-soft);
+  }
+  .item-title { font-weight: 700; }
+  .item-meta  { color: var(--muted); margin-top: 6px; font-size: 14px; }
+  .item-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .section { margin-top: 22px; }
+  .patients-grid { display: grid; gap: 14px; }
+
+  @media (max-width: 980px) {
+    .hero, .dashboard-grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    h1 { font-size: 34px; }
+    .search-box { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">Panel principal</div>
+      <h1>Consultorio clínico</h1>
+      <p>Buscá pacientes, seguí la actividad reciente y tené a mano lo más importante sin navegar de más.</p>
+
+      <form action="/buscar" method="get" class="search-box">
+        <input name="query" placeholder="Buscar por nombre, apellido o DNI" required>
+        <button type="submit">Buscar paciente</button>
+      </form>
+
+      <div class="quick-actions">
+        <a class="btn secondary" href="/nuevo_paciente">Nuevo paciente</a>
+      </div>
+    </div>
+
+    <aside class="hero-side">
+      <h3>Arranque rápido</h3>
+      <ul>
+        <li>Cargá pacientes con datos completos.</li>
+        <li>Guardá fichas clínicas con fecha de atención.</li>
+        <li>Adjuntá estudios como PDFs, imágenes o archivos.</li>
+        <li>Editá datos del paciente cuando cambien.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="stats">
+    <article class="card">
+      <div class="stat-label">Pacientes</div>
+      <div class="stat-value">{{ total_pacientes }}</div>
+      <div class="stat-help">Total cargado en el sistema.</div>
+    </article>
+    <article class="card">
+      <div class="stat-label">Fichas</div>
+      <div class="stat-value">{{ total_fichas }}</div>
+      <div class="stat-help">Evoluciones clínicas registradas.</div>
+    </article>
+    <article class="card">
+      <div class="stat-label">Estudios</div>
+      <div class="stat-value">{{ total_estudios }}</div>
+      <div class="stat-help">Archivos adjuntos guardados.</div>
+    </article>
+    <article class="card">
+      <div class="stat-label">Turnos pendientes</div>
+      <div class="stat-value">{{ total_turnos_pendientes }}</div>
+      <div class="stat-help">Próximas consultas agendadas.</div>
+    </article>
+  </section>
+
+  <section class="dashboard-grid">
+    <article class="activity-card">
+      <h2>Últimas fichas</h2>
+      <div class="activity-list">
+        {% if fichas_recientes %}
+          {% for ficha in fichas_recientes %}
+            <div class="activity-item">
+              <div class="item-title">{{ ficha.apellido }} {{ ficha.nombre }}</div>
+              <div class="item-meta">Fecha: {{ ficha.fecha_atencion_texto }} | DNI: {{ ficha.dni or "Sin cargar" }}</div>
+              <div class="item-actions">
+                <a class="btn secondary" href="{{ url_for('ficha_form', id_paciente=ficha.id_paciente) }}">Abrir paciente</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="activity-item">
+            <div class="item-meta">Todavía no hay fichas cargadas.</div>
+          </div>
+        {% endif %}
+      </div>
+    </article>
+
+    <article class="activity-card">
+      <h2>Últimos estudios</h2>
+      <div class="activity-list">
+        {% if estudios_recientes %}
+          {% for estudio in estudios_recientes %}
+            <div class="activity-item">
+              <div class="item-title">{{ estudio.descripcion or estudio.nombre_original }}</div>
+              <div class="item-meta">Paciente: {{ estudio.apellido }} {{ estudio.nombre }}</div>
+              <div class="item-meta">Subido: {{ estudio.created_at_texto }}</div>
+              <div class="item-actions">
+                <a class="btn secondary" href="{{ url_for('ficha_form', id_paciente=estudio.id_paciente) }}">Ver paciente</a>
+                <a class="btn secondary" href="{{ url_for('descargar_estudio', id_estudio=estudio.id) }}">Descargar</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="activity-item">
+            <div class="item-meta">Todavía no hay estudios adjuntos.</div>
+          </div>
+        {% endif %}
+      </div>
+    </article>
+  </section>
+
+  <section class="section">
+    <h2>Próximos turnos</h2>
+    <div class="patients-grid">
+      {% if proximos_turnos %}
+        {% for turno in proximos_turnos %}
+          <article class="patient-card">
+            <div class="item-title">{{ turno.apellido }} {{ turno.nombre }}</div>
+            <div class="item-meta">Fecha: {{ turno.fecha_texto }} a las {{ turno.hora_texto }}</div>
+            <div class="item-meta">Motivo: {{ turno.motivo or "Sin motivo cargado" }}</div>
+            <div class="item-actions">
+              <a class="btn" href="{{ url_for('ficha_form', id_paciente=turno.id_paciente) }}">Abrir paciente</a>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <article class="patient-card">
+          <div class="item-meta">No hay turnos pendientes en agenda.</div>
+        </article>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Pacientes recientes</h2>
+    <div class="patients-grid">
+      {% if recientes %}
+        {% for paciente in recientes %}
+          <article class="patient-card">
+            <div class="item-title">{{ paciente.apellido }} {{ paciente.nombre }}</div>
+            <div class="item-meta">DNI: {{ paciente.dni or "Sin cargar" }}</div>
+            <div class="item-actions">
+              <a class="btn" href="{{ url_for('ficha_form', id_paciente=paciente.id) }}">Abrir ficha</a>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <article class="patient-card">
+          <div class="item-meta">Todavía no hay pacientes cargados.</div>
+        </article>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

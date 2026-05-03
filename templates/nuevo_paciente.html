@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo paciente{% endblock %}
+
+{% block extra_styles %}
+  .form-card { max-width: 900px; }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 20px;
+  }
+  .full { grid-column: 1 / -1; }
+  label { display: block; font-weight: 600; margin-bottom: 8px; }
+  @media (max-width: 720px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+  <div class="card form-card">
+    <h1>Nuevo paciente</h1>
+    <p>Cargá la información principal del paciente.</p>
+
+    <form action="/guardar_paciente" method="post" class="form-grid">
+      <div>
+        <label for="apellido">Apellido *</label>
+        <input id="apellido" name="apellido" required>
+      </div>
+      <div>
+        <label for="nombre">Nombre *</label>
+        <input id="nombre" name="nombre" required>
+      </div>
+      <div>
+        <label for="dni">DNI *</label>
+        <input id="dni" name="dni" required>
+      </div>
+      <div>
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" name="telefono">
+      </div>
+      <div class="full">
+        <label for="direccion">Dirección</label>
+        <input id="direccion" name="direccion">
+      </div>
+      <div>
+        <label for="fecha_nacimiento">Fecha de nacimiento</label>
+        <input id="fecha_nacimiento" name="fecha_nacimiento" type="date">
+      </div>
+      <div>
+        <label for="obra_social">Obra social</label>
+        <input id="obra_social" name="obra_social">
+      </div>
+      <div class="full inline-actions" style="margin-top:8px;">
+        <button type="submit">Guardar paciente</button>
+        <a class="btn secondary" href="/">Volver</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

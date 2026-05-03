@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Búsqueda de pacientes{% endblock %}
+
+{% block extra_styles %}
+  .toolbar {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .toolbar form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .results-grid {
+    margin-top: 20px;
+    display: grid;
+    gap: 14px;
+  }
+  .result {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .result h2 { margin: 0 0 8px; }
+  .meta { color: var(--muted); margin-top: 4px; }
+  @media (max-width: 720px) {
+    .toolbar form { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+  <div class="toolbar">
+    <h1>Buscar paciente</h1>
+    <form action="/buscar" method="get">
+      <input name="query" value="{{ query }}" placeholder="Nombre, apellido o DNI">
+      <button type="submit">Buscar</button>
+    </form>
+  </div>
+
+  <div class="results-grid">
+    {% if resultados %}
+      {% for paciente in resultados %}
+        <article class="result">
+          <h2>{{ paciente.apellido }} {{ paciente.nombre }}</h2>
+          <div class="meta">DNI: {{ paciente.dni or "Sin cargar" }}</div>
+          <div class="meta">Teléfono: {{ paciente.telefono or "Sin cargar" }}</div>
+          <div class="meta">Obra social: {{ paciente.obra_social or "Sin cargar" }}</div>
+          <div class="inline-actions" style="margin-top:14px;">
+            <a class="btn" href="{{ url_for('ficha_form', id_paciente=paciente.id) }}">Abrir ficha</a>
+          </div>
+        </article>
+      {% endfor %}
+    {% elif query %}
+      <article class="result">
+        <p>No se encontraron pacientes para "<strong>{{ query }}</strong>".</p>
+      </article>
+    {% endif %}
+  </div>
+
+  <div style="margin-top:20px;">
+    <a class="btn secondary" href="/">Volver al inicio</a>
+  </div>
+{% endblock %}

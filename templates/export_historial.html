@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Historial exportado</title>
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #dbe6ec;
+        --paper: #ffffff;
+        --accent: #0f766e;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #f3f8fb;
+        color: var(--ink);
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .sheet {
+        max-width: 920px;
+        margin: 0 auto;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        padding: 32px;
+      }
+      h1, h2, h3 {
+        margin: 0 0 12px;
+      }
+      h1 {
+        font-size: 34px;
+      }
+      h2 {
+        margin-top: 28px;
+        font-size: 22px;
+        color: var(--accent);
+      }
+      p {
+        line-height: 1.55;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .meta {
+        display: grid;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .box {
+        border: 1px solid var(--line);
+        padding: 18px;
+        margin-top: 14px;
+      }
+      .pre {
+        white-space: pre-wrap;
+        line-height: 1.6;
+      }
+      .top-actions {
+        margin-bottom: 24px;
+      }
+      .top-actions button {
+        border: none;
+        background: #0ea5a8;
+        color: white;
+        padding: 12px 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 15px;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+        .sheet {
+          border: none;
+          max-width: none;
+          padding: 0;
+        }
+        .top-actions {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sheet">
+      <div class="top-actions">
+        <button onclick="window.print()">Imprimir / Guardar PDF</button>
+      </div>
+
+      <h1>Historial Clínico</h1>
+      <p class="muted">Exportado el {{ fecha_exportacion }}</p>
+
+      <div class="meta">
+        <div><strong>Paciente:</strong> {{ paciente.apellido }} {{ paciente.nombre }}</div>
+        <div><strong>DNI:</strong> {{ paciente.dni or "Sin cargar" }}</div>
+        <div><strong>Dirección:</strong> {{ paciente.direccion or "Sin cargar" }}</div>
+        <div><strong>Teléfono:</strong> {{ paciente.telefono or "Sin cargar" }}</div>
+        <div><strong>Fecha de nacimiento:</strong> {{ paciente.fecha_nacimiento or "Sin cargar" }}</div>
+        <div><strong>Edad:</strong> {{ paciente.edad }}</div>
+        <div><strong>Obra social:</strong> {{ paciente.obra_social or "Sin cargar" }}</div>
+      </div>
+
+      <h2>Estudios Adjuntos</h2>
+      {% if estudios_adjuntos %}
+        {% for estudio in estudios_adjuntos %}
+          <div class="box">
+            <div><strong>{{ estudio.descripcion or estudio.nombre_original }}</strong></div>
+            <div class="muted">Archivo: {{ estudio.nombre_original }}</div>
+            <div class="muted">Fecha: {{ estudio.fecha_texto }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="box">No hay estudios adjuntos cargados.</div>
+      {% endif %}
+
+      <h2>Historial de Fichas</h2>
+      {% if historial %}
+        {% for ficha in historial %}
+          <div class="box">
+            <h3>Fecha: {{ ficha.fecha_atencion_texto or "Sin fecha" }}</h3>
+            <div class="pre">{{ ficha.guarda or "Sin contenido clínico cargado." }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="box">No hay fichas cargadas para este paciente.</div>
+      {% endif %}
+    </div>
+  </body>
+</html>
