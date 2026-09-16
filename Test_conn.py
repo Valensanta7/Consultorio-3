@@ -1,6 +1,9 @@
-import psycopg2
+from db import ensure_schema, get_connection
 
-dsn = "dbname=consultorio user=postgres password=582456489Mds host=localhost port=5432"
-conn = psycopg2.connect(dsn)
-print("✅ Conexión exitosa")
+
+conn = get_connection()
+print("Conexion exitosa")
 conn.close()
+
+ensure_schema()
+print("Esquema verificado")

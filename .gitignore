@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Local data — DO NOT push patient PDFs to a public repo
+uploads/estudios/*
+!uploads/estudios/.gitkeep
+
+# Environment
+.env
+*.local
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Pip artifacts
+get-pip.py

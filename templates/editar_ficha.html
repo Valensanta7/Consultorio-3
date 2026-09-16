@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Editar ficha – {{ paciente.apellido }} {{ paciente.nombre }}{% endblock %}
+
+{% block extra_styles %}
+  .form-card { max-width: 960px; }
+  label { display: block; font-weight: 600; margin-bottom: 8px; }
+  textarea { min-height: 280px; }
+  .form-grid { display: grid; gap: 18px; margin-top: 16px; }
+  .meta { color: var(--muted); margin-bottom: 16px; display: grid; gap: 4px; }
+{% endblock %}
+
+{% block content %}
+  <div class="card form-card">
+    <h1>Editar ficha</h1>
+    <div class="meta">
+      <div>Paciente: <strong>{{ paciente.apellido }} {{ paciente.nombre }}</strong></div>
+      <div>DNI: {{ paciente.dni or "Sin cargar" }}</div>
+    </div>
+    <p>Corregí la evolución clínica sin necesidad de borrarla y crear una nueva.</p>
+
+    <form action="{{ url_for('actualizar_ficha', id_paciente=id_paciente, id_ficha=ficha.id) }}" method="post" class="form-grid">
+      <div>
+        <label for="fecha_atencion">Fecha de atención</label>
+        <input id="fecha_atencion" name="fecha_atencion" type="date" value="{{ ficha.fecha_atencion_texto }}">
+      </div>
+      <div>
+        <label for="guarda">Diagnóstico / Guarda</label>
+        <textarea id="guarda" name="guarda">{{ ficha.guarda or "" }}</textarea>
+      </div>
+      <div class="inline-actions">
+        <button type="submit">Guardar cambios</button>
+        <a class="btn secondary" href="{{ url_for('ficha_form', id_paciente=id_paciente) }}">Volver a la ficha</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}
