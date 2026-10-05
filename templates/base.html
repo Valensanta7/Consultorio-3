@@ -165,5 +165,20 @@
 
       {% block content %}{% endblock %}
     </div>
+
+    <script>
+      // Abrir el calendario / reloj nativo apenas se toca el campo,
+      // en vez de depender de clickear el iconito chico de la derecha.
+      document.addEventListener("click", function (event) {
+        var field = event.target.closest('input[type="date"], input[type="time"]');
+        if (field && typeof field.showPicker === "function") {
+          try {
+            field.showPicker();
+          } catch (err) {
+            // Algunos navegadores tiran error si ya está abierto; se ignora.
+          }
+        }
+      });
+    </script>
   </body>
 </html>

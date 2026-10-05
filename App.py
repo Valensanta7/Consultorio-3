@@ -16,6 +16,12 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "consultorio3-dev-secret-key")
 BASE_DIR = Path(__file__).resolve().parent
 UPLOAD_DIR = BASE_DIR / "uploads" / "estudios"
 
+HORARIOS_TURNO = [
+    f"{hora:02d}:{minuto:02d}"
+    for hora in range(8, 20)
+    for minuto in (0, 15, 30, 45)
+] + ["20:00"]
+
 
 def ensure_upload_dir():
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -631,6 +637,7 @@ def ficha_form(id_paciente):
         estudios_adjuntos=estudios_adjuntos,
         turnos=turnos,
         hoy=date.today().strftime("%Y-%m-%d"),
+        horarios_turno=HORARIOS_TURNO,
     )
 
 
