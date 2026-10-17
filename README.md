@@ -23,21 +23,27 @@ A full-stack web application to manage patients, clinical records and medical st
 
 ## Project structure
 
+The Flask app is split one module per epic, instead of one large file — each one maps
+to a section of the project's Scrumban board.
+
 ```
 .
-├── App.py              # Flask app, routes and business logic (~1,000 lines)
-├── db.py               # Database connection, schema bootstrap (~140 lines)
+├── App.py              # Entry point: wires up the modules below and runs the app
+├── core.py             # Flask app instance, DB connection lifecycle, login gate
+├── helpers.py          # Shared parsing/formatting + read-only query helpers
+├── auth.py             # Login, logout, brute-force protection
+├── dashboard.py        # Home panel, patient search
+├── pacientes.py        # Patient CRUD
+├── fichas.py           # Clinical records (fichas)
+├── turnos.py           # Appointments
+├── estudios.py         # Attached study uploads
+├── exportacion.py      # PDF / HTML history export
+├── db.py               # Database connection, schema bootstrap
+├── backup.sh           # Database + uploads backup script (see "Backups" below)
 ├── requirements.txt    # Flask, psycopg2-binary, reportlab
-├── templates/          # 9 Jinja2 templates
-│   ├── base.html
-│   ├── login.html
-│   ├── index.html
-│   ├── buscar.html
-│   ├── nuevo_paciente.html
-│   ├── editar_paciente.html
-│   ├── ficha.html
-│   ├── editar_ficha.html
-│   └── export_historial.html
+├── requirements-dev.txt
+├── tests/               # pytest suite (see "Running tests" below)
+├── templates/          # Jinja2 templates
 └── uploads/
     └── estudios/       # PDF medical studies (gitignored in production)
 ```

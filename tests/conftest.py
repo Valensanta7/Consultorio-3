@@ -15,6 +15,7 @@ import psycopg2  # noqa: E402
 import pytest  # noqa: E402
 
 import App as app_module  # noqa: E402
+import auth as auth_module  # noqa: E402
 import db as db_module  # noqa: E402
 
 
@@ -51,7 +52,7 @@ def _tablas_limpias():
     conn.commit()
     cur.close()
     conn.close()
-    app_module.intentos_fallidos_login.clear()
+    auth_module.intentos_fallidos_login.clear()
     yield
 
 
