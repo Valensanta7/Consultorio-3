@@ -1,5 +1,7 @@
 import os
+import time
 import uuid
+from collections import defaultdict
 from datetime import date, datetime
 from io import BytesIO
 from pathlib import Path
@@ -21,6 +23,31 @@ HORARIOS_TURNO = [
     for hora in range(8, 20)
     for minuto in (0, 15, 30, 45)
 ] + ["20:00"]
+
+# ── Protección contra fuerza bruta en el login ─────────────────────────────
+# En memoria: alcanza para un consultorio chico de un solo proceso.
+# Si el servidor se reinicia, los intentos registrados se pierden (no es grave).
+MAX_INTENTOS_LOGIN = 5
+VENTANA_INTENTOS_SEGUNDOS = 15 * 60  # 15 minutos
+intentos_fallidos_login = defaultdict(list)
+
+
+def registrar_intento_fallido(clave):
+    intentos_fallidos_login[clave].append(time.time())
+
+
+def login_bloqueado(clave):
+    ahora = time.time()
+    intentos = intentos_fallidos_login[clave]
+    intentos[:] = [t for t in intentos if ahora - t < VENTANA_INTENTOS_SEGUNDOS]
+    if len(intentos) < MAX_INTENTOS_LOGIN:
+        return None
+    segundos_restantes = VENTANA_INTENTOS_SEGUNDOS - (ahora - intentos[0])
+    return max(1, int(segundos_restantes // 60) + 1)
+
+
+def limpiar_intentos_login(clave):
+    intentos_fallidos_login.pop(clave, None)
 
 
 def ensure_upload_dir():
@@ -257,6 +284,15 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
+        clave_intentos = f"{username.lower()}:{request.remote_addr}"
+
+        minutos_espera = login_bloqueado(clave_intentos)
+        if minutos_espera:
+            error = (
+                f"Demasiados intentos fallidos. Probá de nuevo en "
+                f"{minutos_espera} minuto{'s' if minutos_espera != 1 else ''}."
+            )
+            return render_template("login.html", error=error, username=username, next_url=next_url)
 
         conn = get_db()
         cur = conn.cursor()
@@ -272,11 +308,13 @@ def login():
         cur.close()
 
         if usuario and check_password_hash(usuario["password_hash"], password):
+            limpiar_intentos_login(clave_intentos)
             session["user_id"] = usuario["id"]
             session["username"] = usuario["username"]
             flash("Sesión iniciada correctamente.", "success")
             return redirect(next_url)
 
+        registrar_intento_fallido(clave_intentos)
         error = "Usuario o contraseña incorrectos."
 
     return render_template("login.html", error=error, username=username, next_url=next_url)
@@ -1002,4 +1040,5 @@ def eliminar_ficha(id_ficha, id_paciente):
 if __name__ == "__main__":
     ensure_upload_dir()
     ensure_schema()
-    app.run(debug=True)
+    debug_mode = os.getenv("FLASK_DEBUG", "false").lower() in ("1", "true", "yes")
+    app.run(debug=debug_mode)
