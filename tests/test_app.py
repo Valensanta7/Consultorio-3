@@ -50,8 +50,9 @@ def test_eliminar_paciente_borra_en_cascada(logueado):
 
     logueado.post(f"/paciente/{id_paciente}/eliminar")
 
-    resp = logueado.get(f"/ficha/{id_paciente}")
-    assert resp.status_code == 404
+    resp = logueado.get(f"/ficha/{id_paciente}", follow_redirects=True)
+    assert resp.status_code == 200
+    assert "no encontrado" in resp.get_data(as_text=True)
 
 
 def test_subir_estudio_adjunto(logueado):
@@ -95,6 +96,20 @@ def test_bloqueo_no_se_evade_con_una_sesion_nueva(client):
     resp = otro_cliente.post("/login", data={"username": "admin", "password": "admin123"})
 
     assert "Demasiados intentos fallidos" in resp.get_data(as_text=True)
+
+
+def test_paciente_inexistente_redirige_con_mensaje(logueado):
+    resp = logueado.get("/ficha/999999", follow_redirects=True)
+    assert resp.status_code == 200
+    assert "no encontrado" in resp.get_data(as_text=True)
+
+
+def test_alta_paciente_sin_datos_obligatorios_redirige_con_mensaje(logueado):
+    resp = logueado.post(
+        "/guardar_paciente", data={"nombre": "", "apellido": "", "dni": ""}, follow_redirects=True
+    )
+    assert resp.status_code == 200
+    assert "Faltan datos obligatorios" in resp.get_data(as_text=True)
 
 
 def test_bloqueo_no_afecta_a_otro_usuario(client):

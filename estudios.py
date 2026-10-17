@@ -1,7 +1,7 @@
 import uuid
 from pathlib import Path
 
-from flask import flash, redirect, request, send_file, url_for
+from flask import abort, flash, redirect, request, send_file, url_for
 from werkzeug.utils import secure_filename
 
 from core import UPLOAD_DIR, app, ensure_upload_dir, get_db
@@ -13,7 +13,7 @@ def subir_estudio(id_paciente):
     descripcion = request.form.get("descripcion", "").strip()
 
     if not archivo or not archivo.filename:
-        return "Tenés que seleccionar un archivo de estudio.", 400
+        abort(400, description="Tenés que seleccionar un archivo de estudio.")
 
     ensure_upload_dir()
     nombre_original = archivo.filename
@@ -29,7 +29,7 @@ def subir_estudio(id_paciente):
         if not cur.fetchone():
             if destino.exists():
                 destino.unlink()
-            return f"Paciente con ID {id_paciente} no encontrado", 404
+            abort(404, description=f"Paciente con ID {id_paciente} no encontrado.")
 
         cur.execute(
             """
@@ -67,11 +67,11 @@ def descargar_estudio(id_estudio):
         estudio = cur.fetchone()
 
     if not estudio:
-        return "Estudio no encontrado.", 404
+        abort(404, description="Estudio no encontrado.")
 
     path = UPLOAD_DIR / estudio["nombre_guardado"]
     if not path.exists():
-        return "El archivo del estudio no existe en disco.", 404
+        abort(404, description="El archivo del estudio no existe en disco.")
 
     return send_file(
         path,

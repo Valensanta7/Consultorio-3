@@ -24,6 +24,7 @@
     <p>Corregí teléfono, dirección, obra social o cualquier otro dato del paciente.</p>
 
     <form action="{{ url_for('actualizar_paciente', id_paciente=paciente.id) }}" method="post" class="form-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div>
         <label for="apellido">Apellido *</label>
         <input id="apellido" name="apellido" value="{{ paciente.apellido }}" required>

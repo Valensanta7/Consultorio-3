@@ -1,7 +1,7 @@
-from flask import flash, redirect, request, url_for
+from flask import abort, flash, redirect, request, url_for
 
 from core import app, get_db
-from helpers import parse_date, parse_time
+from helpers import paciente_o_404, parse_date, parse_time
 
 
 @app.route("/paciente/<int:id_paciente>/turno/guardar", methods=["POST"])
@@ -12,13 +12,11 @@ def guardar_turno(id_paciente):
     notas = request.form.get("notas", "").strip()
 
     if not fecha or not hora:
-        return "La fecha y la hora del turno son obligatorias.", 400
+        abort(400, description="La fecha y la hora del turno son obligatorias.")
 
     conn = get_db()
     with conn.cursor() as cur:
-        cur.execute("SELECT id FROM pacientes WHERE id = %s", (id_paciente,))
-        if not cur.fetchone():
-            return f"Paciente con ID {id_paciente} no encontrado", 404
+        paciente_o_404(cur, id_paciente)
 
         cur.execute(
             """
@@ -37,7 +35,7 @@ def actualizar_estado_turno(id_paciente, id_turno):
     nuevo_estado = request.form.get("estado", "").strip().lower()
     estados_validos = {"pendiente", "realizado", "cancelado"}
     if nuevo_estado not in estados_validos:
-        return "Estado de turno inválido.", 400
+        abort(400, description="Estado de turno inválido.")
 
     conn = get_db()
     with conn.cursor() as cur:

@@ -1,5 +1,7 @@
 from datetime import date, datetime
 
+from flask import abort
+
 from core import UPLOAD_DIR
 
 HORARIOS_TURNO = [
@@ -84,6 +86,14 @@ def obtener_paciente(cur, id_paciente):
         (id_paciente,),
     )
     return normalizar_paciente(cur.fetchone())
+
+
+def paciente_o_404(cur, id_paciente):
+    """Busca un paciente o corta la request con un 404 prolijo (ver core.py)."""
+    paciente = obtener_paciente(cur, id_paciente)
+    if not paciente:
+        abort(404, description=f"Paciente con ID {id_paciente} no encontrado.")
+    return paciente
 
 
 def obtener_ficha(cur, id_ficha, id_paciente):

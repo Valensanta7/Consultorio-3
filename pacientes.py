@@ -1,9 +1,9 @@
 from datetime import date
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for
 
 from core import app, get_db
-from helpers import eliminar_archivos_estudios, obtener_paciente, parse_date
+from helpers import eliminar_archivos_estudios, paciente_o_404, parse_date
 
 
 @app.route("/nuevo_paciente")
@@ -22,7 +22,7 @@ def guardar_paciente():
     obra_social = request.form.get("obra_social", "").strip()
 
     if not nombre or not apellido or not dni:
-        return "Faltan datos obligatorios: nombre, apellido y DNI.", 400
+        abort(400, description="Faltan datos obligatorios: nombre, apellido y DNI.")
 
     conn = get_db()
     with conn.cursor() as cur:
@@ -60,10 +60,7 @@ def guardar_paciente():
 @app.route("/paciente/<int:id_paciente>/editar")
 def editar_paciente_form(id_paciente):
     with get_db().cursor() as cur:
-        paciente = obtener_paciente(cur, id_paciente)
-
-    if not paciente:
-        return f"Paciente con ID {id_paciente} no encontrado", 404
+        paciente = paciente_o_404(cur, id_paciente)
 
     return render_template("editar_paciente.html", paciente=paciente)
 
@@ -83,7 +80,7 @@ def actualizar_paciente(id_paciente):
     observaciones_generales = request.form.get("observaciones_generales", "").strip()
 
     if not nombre or not apellido or not dni:
-        return "Faltan datos obligatorios: nombre, apellido y DNI.", 400
+        abort(400, description="Faltan datos obligatorios: nombre, apellido y DNI.")
 
     conn = get_db()
     with conn.cursor() as cur:
@@ -92,7 +89,7 @@ def actualizar_paciente(id_paciente):
             (dni, id_paciente),
         )
         if cur.fetchone():
-            return "Ya existe otro paciente con ese DNI.", 400
+            abort(400, description="Ya existe otro paciente con ese DNI.")
 
         cur.execute(
             """

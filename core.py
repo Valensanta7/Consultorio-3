@@ -1,12 +1,26 @@
 import os
 from pathlib import Path
 
-from flask import Flask, g, redirect, request, session, url_for
+from flask import Flask, flash, g, redirect, request, session, url_for
+from flask_wtf import CSRFProtect
 
 from db import get_connection
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "consultorio3-dev-secret-key")
+CSRFProtect(app)
+
+
+@app.errorhandler(404)
+def recurso_no_encontrado(error):
+    flash(error.description or "No se encontró lo que buscabas.", "error")
+    return redirect(url_for("index"))
+
+
+@app.errorhandler(400)
+def solicitud_invalida(error):
+    flash(error.description or "Hubo un problema con los datos enviados.", "error")
+    return redirect(request.referrer or url_for("index"))
 
 BASE_DIR = Path(__file__).resolve().parent
 UPLOAD_DIR = BASE_DIR / "uploads" / "estudios"

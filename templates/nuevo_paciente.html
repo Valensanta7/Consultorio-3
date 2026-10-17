@@ -23,6 +23,7 @@
     <p>Cargá la información principal del paciente.</p>
 
     <form action="/guardar_paciente" method="post" class="form-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div>
         <label for="apellido">Apellido *</label>
         <input id="apellido" name="apellido" required>

@@ -1,6 +1,6 @@
 from datetime import date
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for
 
 from core import app, get_db
 from helpers import (
@@ -8,8 +8,8 @@ from helpers import (
     obtener_estudios,
     obtener_ficha,
     obtener_historial,
-    obtener_paciente,
     obtener_turnos,
+    paciente_o_404,
     parse_date,
 )
 
@@ -17,10 +17,7 @@ from helpers import (
 @app.route("/ficha/<int:id_paciente>")
 def ficha_form(id_paciente):
     with get_db().cursor() as cur:
-        paciente = obtener_paciente(cur, id_paciente)
-        if not paciente:
-            return f"Paciente con ID {id_paciente} no encontrado", 404
-
+        paciente = paciente_o_404(cur, id_paciente)
         historial = obtener_historial(cur, id_paciente)
         estudios_adjuntos = obtener_estudios(cur, id_paciente)
         turnos = obtener_turnos(cur, id_paciente)
@@ -44,7 +41,7 @@ def guardar_ficha():
     guarda = request.form.get("guarda", "").strip()
 
     if not id_paciente:
-        return "Falta el paciente asociado a la ficha.", 400
+        abort(400, description="Falta el paciente asociado a la ficha.")
 
     conn = get_db()
     with conn.cursor() as cur:
@@ -64,13 +61,11 @@ def guardar_ficha():
 @app.route("/ficha/<int:id_paciente>/editar/<int:id_ficha>")
 def editar_ficha_form(id_paciente, id_ficha):
     with get_db().cursor() as cur:
-        paciente = obtener_paciente(cur, id_paciente)
+        paciente = paciente_o_404(cur, id_paciente)
         ficha = obtener_ficha(cur, id_ficha, id_paciente)
 
-    if not paciente:
-        return f"Paciente con ID {id_paciente} no encontrado", 404
     if not ficha:
-        return f"Ficha con ID {id_ficha} no encontrada", 404
+        abort(404, description=f"Ficha con ID {id_ficha} no encontrada.")
 
     return render_template(
         "editar_ficha.html",

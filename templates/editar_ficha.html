@@ -20,6 +20,7 @@
     <p>Corregí la evolución clínica sin necesidad de borrarla y crear una nueva.</p>
 
     <form action="{{ url_for('actualizar_ficha', id_paciente=id_paciente, id_ficha=ficha.id) }}" method="post" class="form-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div>
         <label for="fecha_atencion">Fecha de atención</label>
         <input id="fecha_atencion" name="fecha_atencion" type="date" value="{{ ficha.fecha_atencion_texto }}">

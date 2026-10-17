@@ -4,16 +4,13 @@ from io import BytesIO
 from flask import render_template, send_file
 
 from core import app, get_db
-from helpers import obtener_estudios, obtener_historial, obtener_paciente
+from helpers import obtener_estudios, obtener_historial, paciente_o_404
 
 
 @app.route("/paciente/<int:id_paciente>/exportar/html")
 def exportar_historial_html(id_paciente):
     with get_db().cursor() as cur:
-        paciente = obtener_paciente(cur, id_paciente)
-        if not paciente:
-            return f"Paciente con ID {id_paciente} no encontrado", 404
-
+        paciente = paciente_o_404(cur, id_paciente)
         historial = obtener_historial(cur, id_paciente)
         estudios_adjuntos = obtener_estudios(cur, id_paciente)
 
@@ -35,10 +32,7 @@ def exportar_historial_pdf(id_paciente):
         return "Falta instalar reportlab para exportar PDF.", 500
 
     with get_db().cursor() as cur:
-        paciente = obtener_paciente(cur, id_paciente)
-        if not paciente:
-            return f"Paciente con ID {id_paciente} no encontrado", 404
-
+        paciente = paciente_o_404(cur, id_paciente)
         historial = obtener_historial(cur, id_paciente)
         estudios_adjuntos = obtener_estudios(cur, id_paciente)
 

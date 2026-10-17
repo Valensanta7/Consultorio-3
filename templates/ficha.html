@@ -164,6 +164,7 @@
             method="post"
             onsubmit="return confirm('¿Seguro que querés eliminar este paciente? Se borrarán sus fichas, estudios y turnos.');"
           >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit">Eliminar paciente</button>
           </form>
         </div>
@@ -175,6 +176,7 @@
         <p class="muted small">Datos importantes que no deben perderse entre fichas: alergias, antecedentes, medicación.</p>
 
         <form action="{{ url_for('guardar_bloque_clinico', id_paciente=id_paciente) }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div>
             <label for="alergias">Alergias</label>
             <textarea id="alergias" name="alergias" placeholder="Ej: Penicilina, ibuprofeno, látex.">{{ paciente.alergias or "" }}</textarea>
@@ -201,6 +203,7 @@
         <p class="muted small">Tomografías, análisis, PDFs, imágenes o cualquier archivo que traiga el paciente.</p>
 
         <form action="{{ url_for('subir_estudio', id_paciente=id_paciente) }}" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div>
             <label for="descripcion">Descripción</label>
             <input id="descripcion" name="descripcion" placeholder="Ej: Tomografía de tórax, laboratorio de abril.">
@@ -229,6 +232,7 @@
                     method="post"
                     onsubmit="return confirm('¿Seguro que querés eliminar este estudio?');"
                   >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit">Eliminar</button>
                   </form>
                 </div>
@@ -248,6 +252,7 @@
         <p class="muted small">Agendá próximas consultas y llevá el control de su estado.</p>
 
         <form action="{{ url_for('guardar_turno', id_paciente=id_paciente) }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div>
             <label for="turno_fecha">Fecha</label>
             <input id="turno_fecha" name="fecha" type="date" value="{{ hoy }}" required>
@@ -285,18 +290,21 @@
                 <div class="inline-actions">
                   {% if turno.estado != 'pendiente' %}
                     <form class="mini-form" action="{{ url_for('actualizar_estado_turno', id_paciente=id_paciente, id_turno=turno.id) }}" method="post">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                       <input type="hidden" name="estado" value="pendiente">
                       <button type="submit">Marcar pendiente</button>
                     </form>
                   {% endif %}
                   {% if turno.estado != 'realizado' %}
                     <form class="mini-form" action="{{ url_for('actualizar_estado_turno', id_paciente=id_paciente, id_turno=turno.id) }}" method="post">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                       <input type="hidden" name="estado" value="realizado">
                       <button type="submit">Marcar realizado</button>
                     </form>
                   {% endif %}
                   {% if turno.estado != 'cancelado' %}
                     <form class="mini-form danger-inline" action="{{ url_for('actualizar_estado_turno', id_paciente=id_paciente, id_turno=turno.id) }}" method="post">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                       <input type="hidden" name="estado" value="cancelado">
                       <button type="submit">Cancelar turno</button>
                     </form>
@@ -320,6 +328,7 @@
         <h2>Nueva ficha</h2>
         <p class="muted">Guardá la evolución o guarda clínica del día.</p>
         <form action="/guardar_ficha" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <input type="hidden" name="id_paciente" value="{{ id_paciente }}">
 
           <div>
@@ -359,6 +368,7 @@
                   method="post"
                   onsubmit="return confirm('¿Seguro que querés eliminar esta ficha?');"
                 >
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                   <button type="submit">Eliminar ficha</button>
                 </form>
               </div>
