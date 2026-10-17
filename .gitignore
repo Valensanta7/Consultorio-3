@@ -27,3 +27,6 @@ backups/
 
 # Pip artifacts
 get-pip.py
+
+# Tests
+.pytest_cache/

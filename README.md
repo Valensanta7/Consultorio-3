@@ -46,27 +46,49 @@ A full-stack web application to manage patients, clinical records and medical st
 
 ```bash
 # 1. Clone and enter the project
-git clone https://github.com/<your-username>/Consultorio3.git
-cd Consultorio3
+git clone https://github.com/Valensanta7/Consultorio-3.git
+cd Consultorio-3
 
 # 2. Set up a virtualenv
 python3 -m venv venv
 source venv/bin/activate
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# 3. Install dependencies (use `python -m pip`, not a bare `pip`,
+#    to make sure it installs into *this* virtualenv)
+python -m pip install -r requirements.txt
 
-# 4. Configure your PostgreSQL connection
-# Set the env var DATABASE_URL or edit db.py
-export DATABASE_URL="postgresql://user:password@localhost:5432/consultorio3"
+# 4. Configure your PostgreSQL connection (all optional — these are the defaults)
+export DB_NAME="consultorio"
+export DB_USER="postgres"
+export DB_PASSWORD=""
+export DB_HOST="localhost"
+export DB_PORT="5432"
 export FLASK_SECRET_KEY="your-random-secret-here"
 
-# 5. Run
+# 5. Run (debug mode is OFF by default; turn it on only for local dev)
+export FLASK_DEBUG=true
 python3 App.py
 # Open http://localhost:5000
 ```
 
 The schema is bootstrapped automatically on first run via `ensure_schema()`.
+
+## Running tests
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pytest tests/ -v
+```
+
+Tests run against a separate `consultorio_test` database (created automatically), so they never touch real data.
+
+## Backups
+
+```bash
+./backup.sh
+```
+
+Dumps the database and the uploaded studies into `backups/`, keeping the last 7 days. See the comments at the top of `backup.sh` for how to schedule it daily with `cron`.
 
 ## What I learned building this
 
@@ -76,7 +98,6 @@ The schema is bootstrapped automatically on first run via `ensure_schema()`.
 - Per-request DB connection lifecycle (`g`, `teardown_appcontext`)
 - Authentication flow with hashed passwords (no plain text storage)
 
-## Author
+## Authors
 
-Valentín Santamaría — final-year Software Development student, based in Dublin.
-[LinkedIn](https://www.linkedin.com/in/valentin-santamaria-dev)
+Valentín Santamaría and Sebastián Ureta — final-year Software Development students. Built as the thesis project for the Métodos Ágiles course.
