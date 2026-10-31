@@ -96,6 +96,20 @@ Tests run against a separate `consultorio_test` database (created automatically)
 
 Dumps the database and the uploaded studies into `backups/`, keeping the last 7 days. See the comments at the top of `backup.sh` for how to schedule it daily with `cron`.
 
+## Production deployment
+
+The built-in `python3 App.py` server is only for local development (Flask itself warns about this).
+For anything beyond a demo, run the app with a production WSGI server instead:
+
+```bash
+export FLASK_DEBUG=false   # make sure debug mode is off
+gunicorn App:app
+```
+
+No code changes are needed — `gunicorn` just imports the same `app` object `App.py` already
+exposes. A `Procfile` is included for platforms that read one (Heroku-style). In front of
+`gunicorn`, a reverse proxy (e.g. Nginx) would normally handle HTTPS and serve static files.
+
 ## What I learned building this
 
 - Designing a relational schema for a real-world domain (patients, clinical records, file attachments)
