@@ -1,4 +1,4 @@
-"""Punto de entrada de Consultorio3.
+"""Punto de entrada de MediSys.
 
 Las rutas viven repartidas por épica, cada una en su propio módulo
 (auth, dashboard, pacientes, fichas, turnos, estudios, exportacion).

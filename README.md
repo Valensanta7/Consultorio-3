@@ -1,6 +1,8 @@
-# Consultorio3 — Medical Practice Management System
+# MediSys — Medical Practice Management System
 
 A full-stack web application to manage patients, clinical records and medical studies for a private medical practice. Built end-to-end as a personal project in 2025.
+
+> Internally, the codebase and repository are still named `Consultorio3` / `Consultorio-3` — only the product name shown to users changed to MediSys.
 
 ## Tech Stack
 
