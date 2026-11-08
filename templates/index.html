@@ -12,6 +12,17 @@
   .hero-main {
     padding: 28px;
   }
+  .hero-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .hero-brand img {
+    height: 40px;
+    width: auto;
+    display: block;
+  }
   .hero-side {
     padding: 22px;
     background: linear-gradient(180deg, #ffffff 0%, #f2fffd 100%);
@@ -119,7 +130,10 @@
   <section class="hero">
     <div class="hero-main">
       <div class="eyebrow">Panel principal</div>
-      <h1>MediSys</h1>
+      <div class="hero-brand">
+        <img src="{{ url_for('static', filename='logo-medisys-icon.png') }}" alt="">
+        <h1>MediSys</h1>
+      </div>
       <p>Buscá pacientes, seguí la actividad reciente y tené a mano lo más importante sin navegar de más.</p>
 
       <form action="/buscar" method="get" class="search-box">

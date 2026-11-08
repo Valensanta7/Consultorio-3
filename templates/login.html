@@ -13,6 +13,12 @@
     padding: 0;
   }
   .card { padding: 28px; }
+  .brand-logo {
+    display: block;
+    width: 160px;
+    margin: 0 auto 18px;
+    border-radius: 16px;
+  }
   .eyebrow {
     color: var(--accent-dark);
     font-size: 12px;
@@ -42,6 +48,7 @@
 
 {% block content %}
   <div class="card">
+    <img class="brand-logo" src="{{ url_for('static', filename='logo-medisys.png') }}" alt="MediSys">
     <div class="eyebrow">Acceso protegido</div>
     <h1>Ingresar</h1>
     <p>Entrá con tu usuario para acceder a pacientes, fichas, estudios y exportaciones.</p>
